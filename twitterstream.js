@@ -32,17 +32,17 @@ twit.stream('filter', {track:track}, function(stream) {
         var friends = user.friends_count;
 
         var friend_ratio = followers / friends;
-        var tweet_id = data.id_str;
 
-        var random = getRandom(1,5) * 1000;
 
-        if(followers > 100 & friend_ratio > 3 & user.lang == 'en'){
+
+
+        if(followers > 100 & friend_ratio > 2 & user.lang == 'en'){
             if(!data.favorited & (data.text.split("#").length - 1) <= 2 ){
-                console.log("\n\nfound one",random);
-                setTimeout(
-                    createFavorite(tweet_id),
-                    random
-                );
+                var tweet_id = data.id_str;
+                console.log("\n\nfound one",tweet_id);
+                createFavorite(tweet_id);
+            }else{
+                console.log("\n\nnot good enough", data.text);
             }
 
         }else{
@@ -54,11 +54,14 @@ twit.stream('filter', {track:track}, function(stream) {
 });
 
 function createFavorite(tweet_id){
-    twit.post('/favorites/create.json',{id:tweet_id}, function(data){
-        if(data.favorited){
-            console.log('favorited',tweet_id, data.user.screen_name, data.text);
-        }
-    });
+    var random = getRandom(1,50) * 1000;
+    setTimeout( function(){
+        twit.post('/favorites/create.json',{id:tweet_id}, function(data){
+            if(data.favorited){
+                console.log('favorited',tweet_id, data.user.screen_name, data.text);
+            }
+        });
+    },random)
 }
 
 // Returns a random number between min and max
